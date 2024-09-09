@@ -9,6 +9,7 @@ import requests
 DB_FILE = '/app/data/database.sqlite'
 
 url = 'http://localhost:9090/-/reload'
+reload_prom = True
 
 # Path to save JSON file
 JSON_FILE = '/app/save/proxy_hosts.json'
@@ -48,7 +49,7 @@ def prometheus_config_exporter(targets):
                     },
                     {
                         "target_label": "__address__",
-                        "replacement": "monitoring-blackbox:9115",
+                        "replacement": "blackbox:9115",
                     }
                 ],
             },
@@ -71,12 +72,13 @@ def prometheus_config_exporter(targets):
 
     print(f"{time.ctime()}: Prometheus configuration file has been updated.")
 
-    print(f"{time.ctime()}: Reloading Prometheus configuration.")
-
-    response = requests.post(url)
-    print(response.status_code)
-    print(response.text)
-    print(f"{time.ctime()}: Prometheus configuration has been reloaded.")
+    if reload_prom:
+	    print(f"{time.ctime()}: Reloading Prometheus configuration.")
+	
+	    response = requests.post(url)
+	    print(response.status_code)
+	    print(response.text)
+	    print(f"{time.ctime()}: Prometheus configuration has been reloaded.")
 
 
 def export_proxy_hosts():
