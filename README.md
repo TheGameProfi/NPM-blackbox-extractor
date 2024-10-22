@@ -1,10 +1,32 @@
 # NPM-blackbox-extractor
-Python Script to extract the active Proxy's from the 'Nginx Proxy Manager' using the Database
+Python Script to extract the active Proxies from the 'Nginx Proxy Manager' using the Database
 
-This Script exports the Active Proxy's into an blackbox-exporter-target file, and reloads the Prometheus Config via the API.
-You need to change the Prometheus URL inside the [exporter.py](https://github.com/TheGameProfi/NPM-blackbox-extractor/blob/main/exporter.py#L11) in Line 11, or set `reload_prom` to `False` in Line 12
+This Script exports the Active Proxies into an blackbox-exporter-target file, and can reloads the Prometheus Config via the API.
 
-You also need to change the Blackbox exporter url/ip in [Line 52](https://github.com/TheGameProfi/NPM-blackbox-extractor/blob/main/exporter.py#L52)
+## Configuration
+For Examples of Compose Files see [examples/](examples/)
+
+### Prometheus
+Default it takes the `host.docker.internal:9090`, for that you would need to pass through the docker host:
+```bash
+# Docker run
+docker run -it --add-host=host.docker.internal:host-gateway ...
+```
+```yml
+# Docker Compose
+services:
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  ...
+```
+If you have a different Url or behind a Proxy you can change the PrometheusUrl via the Environment Var `prometheusUrl` (with http/https and if the subpath).
+Or if you don't want the Prometheus to be reloaded you can deactivate it by passing the environment Var `reloadProm=False`
+
+For running the Exporter without docker you can either pass the Envs or change it in the [exporter.py](exporter.py#L12)
+
+### Blackbox
+Default the Extractor is using `blackbox:9115` as blackboxUrl to change it pass the env Var `blackboxUrl` without http/https (https not tested).
+Or when running locally you can change it in [Line 15](exporter.py#L15)
 
 ---
 ```text

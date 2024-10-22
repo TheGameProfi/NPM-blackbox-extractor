@@ -4,12 +4,15 @@ import yaml
 import time
 import ast
 import requests
+import os
 
 # Path to your SQLite database file
 DB_FILE = '/app/data/database.sqlite'
 
-url = 'http://localhost:9090/-/reload'
-reload_prom = True
+url = os.environ.get("prometheusUrl", "http://host.docker.internal:9090/-/reload")
+reload_prom = os.environ.get("reloadProm", True)
+
+blackboxUrl = os.environ.get("blackboxUrl", "blackbox:9115")
 
 # Path to save JSON file
 JSON_FILE = '/app/save/proxy_hosts.json'
@@ -49,7 +52,7 @@ def prometheus_config_exporter(targets):
                     },
                     {
                         "target_label": "__address__",
-                        "replacement": "blackbox:9115",
+                        "replacement": blackboxUrl,
                     }
                 ],
             },

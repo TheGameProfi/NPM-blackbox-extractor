@@ -1,0 +1,47 @@
+services:
+  nginxproxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
+      
+  host-exporter:
+    image: ghcr.io/thegameprofi/npm-blackbox-extractor
+    environment:
+      - prometheusUrl=http://prometheus:9090/-/reload
+    volumes:
+      - ./npm/data/database.sqlite:/app/data/database.sqlite
+      - ./hosts.json:/app/save/proxy_hosts.json
+      - ./prometheus/http_targets.yml:/app/save/prometheus.yml
+    restart: unless-stopped
+
+  blackbox:
+    image: prom/blackbox-exporter
+    container_name: blackbox
+    volumes:
+      - ./blackbox:/config
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command:
+      - "--config.file=/config/blackbox.yml"
+    restart: unless-stopped
+    
+  monitoring-prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--web.enable-lifecycle"
+    restart: unless-stopped
+  
