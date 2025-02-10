@@ -28,9 +28,8 @@ jobs:
       - name: Extract Latest Tag
         id: latest_tag
         run: |
-          LATEST_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 | sed 's/^v//')
-          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
-          echo "::set-output name=latest_tag::$LATEST_TAG"
+          LATEST_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+          echo "{latest_tag}=$LATEST_TAG" >> $GITHUB_OUTPUT
       # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
