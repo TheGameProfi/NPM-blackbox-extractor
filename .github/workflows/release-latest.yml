@@ -44,15 +44,11 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=${{ github.ref_name == steps.latest_tag.outputs.latest_tag }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest,enable=${{ github.ref_name == steps.latest_tag.outputs.latest_tag }}
-      - name: Remove latest tag if not the highest version
-        if: github.ref_name != steps.latest_tag.outputs.latest_tag
-        run: |
-          export "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')"
-          docker rmi ghcr.io/$name:latest || true
       # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
       # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
       # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
