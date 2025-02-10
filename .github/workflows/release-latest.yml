@@ -1,4 +1,4 @@
-#
+po#
 name: Create and publish a Docker image
 
 # Configures this workflow to run every time a change is pushed to the branch called `release`.
@@ -51,7 +51,7 @@ jobs:
       - name: Remove latest tag if not the highest version
         if: github.ref_name != steps.latest_tag.outputs.latest_tag
         run: |
-          echo "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')"
+          export "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')"
           docker rmi ghcr.io/$name:latest || true
       # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
       # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
